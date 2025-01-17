@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, render_template, session, send_file
+from flask import Flask, request, jsonify, render_template, session
 from preprocessing import preprocess_text
 from summarization import generate_summary
 from topic_modeling import extract_topics
@@ -11,9 +11,13 @@ from fpdf import FPDF
 import boto3
 from botocore.exceptions import NoCredentialsError
 from google.cloud import storage  # Import Google Cloud Storage client
+from dotenv import load_dotenv
 
-# Set the Google Cloud credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\LENOVO\\Desktop\\Swift GC\\env\\keys\\keyfile.json"
+# Load environment variables from .env file
+load_dotenv()
+
+# Set the Google Cloud credentials using environment variable
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 app = Flask(__name__)
 app.secret_key = 'teamflexbox'
