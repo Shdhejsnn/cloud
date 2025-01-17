@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Meeting Minutes Generator</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .header {
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .content {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #007BFF;
+            font-size: 1.5em;
+            margin-top: 0;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .content .team-member {
+            margin-bottom: 20px;
+        }
+        .content .team-member h3 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #007BFF;
+        }
+        .content .team-member p {
+            margin: 5px 0;
+        }
+        .footer {
+            background-color: #007BFF;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .footer a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 10px;
+            text-align: center;
+            color: #ffffff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>About Us</h1>
+    </div>
+    
+    <div class="content">
+        <h2>Project Overview</h2>
+        <p>Welcome to the Meeting Minutes Generator! Our project is designed to automate the process of generating meeting minutes from transcripts, making it easier to keep track of important discussions and decisions. The tool provides features such as text preprocessing, summarization, topic extraction, and sentiment analysis to enhance your meeting documentation.</p>
+        
+        <h2>Our Team</h2>
+        <div class="team-member">
+            <h3>Skanda H M</h3>
+            <p>Email: hmskanda06@gmail.com</p>
+            <p>Skanda is the lead developer and has a background in software engineering. He specializes in backend development and is passionate about creating efficient and scalable systems.</p>
+        </div>
+        <div class="team-member">
+            <h3>Pradhyun Kuncham</h3>
+            <p>Email: pradhyunk8@gmail.com</p>
+            <p>Pradhyun is the frontend designer responsible for the user interface and experience. She has a keen eye for design and aims to create intuitive and visually appealing applications.</p>
+        </div>
+        <div class="team-member">
+            <h3>Prakul M</h3>
+            <p>Email: mprakul06@gmail.com</p>
+            <p>Prakul is the backend designer responsible for the server-side logic and database management. He has a strong focus on optimizing performance and ensuring that applications run smoothly and efficiently.</p>
+        </div>
+       
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2024 Meeting Minutes Generator | <a href="/" class="button">Back to Home</a></p>
+    </div>
+</body>
+</html>

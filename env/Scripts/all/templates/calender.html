@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Minutes Generator</title>
+    <style>
+        /* Add your existing CSS here */
+    </style>
+    
+    <!-- FullCalendar & jQuery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Meeting Minutes Generator</h1>
+        <!-- Your form and results section -->
+        
+        <!-- Calendar Icon -->
+        <div class="calendar-icon" id="showCalendar">
+            📅
+        </div>
+
+        <!-- Calendar Integration -->
+        <div id="calendar"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTranscript = localStorage.getItem('transcript');
+            if (savedTranscript) {
+                document.getElementById('transcript').value = savedTranscript;
+            }
+
+            // Initialize FullCalendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: '/get_events',  // Load events from the server
+                eventClick: function(info) {
+                    // Redirect to summary view for the clicked event
+                    window.location.href = '/view_summary/' + info.event.startStr;
+                }
+            });
+
+            // Show calendar when calendar icon is clicked
+            document.getElementById('showCalendar').addEventListener('click', function() {
+                const calendarContainer = document.getElementById('calendar');
+                if (calendarContainer.style.display === 'none' || calendarContainer.style.display === '') {
+                    calendarContainer.style.display = 'block';
+                    calendar.render();
+                } else {
+                    calendarContainer.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('transcriptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Save transcript to localStorage
+            const transcript = document.getElementById('transcript').value;
+            const eventDate = document.getElementById('eventDate').value; // Get event date value
+            localStorage.setItem('transcript', transcript);
+
+            const formData = new FormData(this);
+            
+            fetch('/generate_minutes', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display results
+                document.getElementById('results').innerHTML = `
+                    <h2>Results</h2>
+                    <a href="/tokenized">View Tokenized Text</a>
+                    <a href="/summary">View Summary</a>
+                    <a href="/topics">View Topics</a>
+                    <a href="/keywords">View Keywords</a>
+                `;
+
+                // Display sentiment analysis
+                document.getElementById('sentimentLabel').innerText = `Sentiment: ${data.sentiment}`;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

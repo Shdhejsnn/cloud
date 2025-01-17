@@ -1,0 +1,227 @@
+/* styles.css */
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    background-color: #f0f2f5; 
+    color: #333; 
+}
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #007BFF;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+.top-row img {
+    height: 40px;
+}
+.top-row a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: 45px;
+}
+.top-row a:hover {
+    text-decoration: underline;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 80px auto 20px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+h1 {
+    text-align: center;
+    color: #007BFF;
+    margin-bottom: 20px;
+    font-size: 2em;
+    font-weight: 600;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+textarea { 
+    width: 100%; 
+    height: 200px; 
+    padding: 15px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.5;
+    resize: vertical;
+}
+input[type="date"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+button { 
+    padding: 12px 25px; 
+    font-size: 16px; 
+    color: #ffffff; 
+    background-color: #007BFF; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease;
+}
+button:hover { 
+    background-color: #0056b3; 
+}
+.results { 
+    margin-top: 30px; 
+    padding: 20px; 
+    background-color: #f9f9f9; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+}
+.results h2 { 
+    margin-top: 0; 
+    color: #007BFF;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+.results a { 
+    display: block; 
+    margin: 10px 0; 
+    color: #007BFF; 
+    text-decoration: none; 
+    font-size: 18px;
+}
+.results a:hover { 
+    text-decoration: underline; 
+}
+.sentiment {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e9ecef;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 18px;
+}
+.sentiment span {
+    font-weight: bold;
+}
+.calendar-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #007BFF;
+    text-align: center;
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
+.calendar-icon:hover {
+    background-color: #d6d6d6;
+}
+#calendar {
+    margin-top: 20px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+}
+.fc-header-toolbar {
+    background-color: #6a6f75;
+    color: #ffffff;
+    border-bottom: 1px solid #ddd;
+}
+.fc-daygrid-day {
+    font-size: 14px;
+    text-align: center;
+}
+.fc-daygrid-day-top {
+    background-color: #4794e0;
+    color: #ffffff;
+}
+.fc-daygrid-day-number {
+    font-size: 14px;
+}
+.fc-daygrid-day-content {
+    padding: 5px;
+}
+/* Add CSS to style calendar events based on color */
+.fc-event {
+    color: #fff; /* Default text color */
+}
+
+.fc-event[data-color="green"] {
+    background-color: green !important;
+}
+
+.fc-event[data-color="red"] {
+    background-color: red !important;
+}
+
+.fc-event[data-color="gray"] {
+    background-color: gray !important;
+}
+#transcriptForm {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    gap: 15px; /* Space between form elements */
+}
+
+#transcriptForm textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: vertical; /* Allow vertical resizing only */
+}
+
+#transcriptForm input[type="date"],
+#transcriptForm select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+#transcriptForm button[type="submit"] {
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#transcriptForm button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+

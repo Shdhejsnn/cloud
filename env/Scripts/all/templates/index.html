@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Minutes Generator</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <!-- FullCalendar & jQuery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <!-- Top row with logo and About link -->
+    <div class="top-row">
+        <img src="{{ url_for('static', filename='images/favicon-32x32.png') }}" alt="Logo">
+        <a href="/about">About</a>
+    </div>
+
+    <div class="container">
+        <h1>Meeting Minutes Generator</h1>
+        <form id="transcriptForm">
+            <textarea id="transcript" name="transcript" placeholder="Enter the meeting transcript here..." required>{{ session.get('transcript', '') }}</textarea>
+            
+            <input type="date" id="eventDate" name="eventDate" value="{{ session.get('event_date', '') }}" required>
+            
+            <!-- Department Dropdown -->
+            <select id="department" name="department" required>
+                <option value="" disabled selected>Select Department</option>
+                <option value="HR">Human Resources</option>
+                <option value="Finance">Finance</option>
+                <option value="IT">Information Technology</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Sales">Sales</option>
+                <!-- Add more departments as needed -->
+            </select>
+
+            <button type="submit">Generate Minutes</button>
+        </form>
+        
+        <!-- Display the generated meeting minutes -->
+        <div class="results" id="results"></div>
+       
+        <!-- Display sentiment analysis -->
+        <div class="sentiment" id="sentiment">
+            <span id="sentimentLabel"></span>
+        </div>
+
+        <!-- Calendar Icon -->
+        <div class="calendar-icon" id="showCalendar">
+            📅
+        </div>
+
+        <!-- Calendar Integration -->
+        <div id="calendar"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load stored results from sessionStorage if available
+            const results = sessionStorage.getItem('results');
+            if (results) {
+                const data = JSON.parse(results);
+                
+                // Display results
+                document.getElementById('results').innerHTML = `
+                    <h2>Results</h2>
+                    <a href="/tokenized">View Tokenized Text</a>
+                    <a href="/summary">View Summary</a>
+                    <a href="/topics">View Topics</a>
+                    <a href="/keywords">View Keywords</a>
+                    <a href="/questions">View Questions</a>
+                    <a href="/download_pdf" id="download-pdf">Download Detailed Summary as PDF</a> <!-- Updated PDF Download Link -->
+                `;
+    
+                // Display sentiment analysis
+                document.getElementById('sentimentLabel').innerText = `Sentiment: ${data.sentiment}`;
+            }
+    
+            // Initialize the calendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch('/get_events')
+                        .then(response => response.json())
+                        .then(events => {
+                            successCallback(events.map(event => ({
+                                ...event,
+                                color: event.color, // Use color property from the event data
+                                extendedProps: {
+                                    color: event.color // Add color property to extendedProps
+                                }
+                            })));
+                        })
+                        .catch(error => failureCallback(error));
+                },
+                eventClick: function(info) {
+                    window.location.href = `/view_summary/${info.event.startStr}`; // Fixed URL interpolation
+                },
+                height: 'auto', // Adjust calendar height automatically
+                editable: false, // Set to true if you want to make events draggable or resizable
+                dayMaxEvents: true // Show "more" link when too many events
+            });
+    
+            calendar.render();
+    
+            // Show or hide the calendar based on its previous state
+            const calendarVisible = localStorage.getItem('calendarVisible') === 'true';
+            calendarEl.style.display = calendarVisible ? 'block' : 'none';
+    
+            // Toggle calendar visibility on icon click
+            document.getElementById('showCalendar').addEventListener('click', function() {
+                const isVisible = calendarEl.style.display === 'block';
+                calendarEl.style.display = isVisible ? 'none' : 'block';
+                localStorage.setItem('calendarVisible', !isVisible); // Store the calendar's visibility state
+            });
+        });
+    
+        document.getElementById('transcriptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            // Save transcript, event date, and department to localStorage
+            const transcript = document.getElementById('transcript').value;
+            const eventDate = document.getElementById('eventDate').value;
+            const department = document.getElementById('department').value;
+            localStorage.setItem('transcript', transcript);
+            localStorage.setItem('eventDate', eventDate);
+            localStorage.setItem('department', department);
+    
+            const formData = new FormData(this);
+            
+            fetch('/generate_minutes', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Store results in sessionStorage
+                sessionStorage.setItem('results', JSON.stringify({
+                    tokens: data.tokens,
+                    summary: data.summary,
+                    topics: data.topics,
+                    keywords: data.keywords,
+                    sentiment: data.sentiment,
+                    action_items: data.action_items,
+                    questions: data.questions,
+                    department: department // Store department in session
+                }));
+    
+                // Display results
+                document.getElementById('results').innerHTML = `
+                    <h2>Results</h2>
+                    <a href="/tokenized">View Tokenized Text</a>
+                    <a href="/summary">View Summary</a>
+                    <a href="/topics">View Topics</a>
+                    <a href="/keywords">View Keywords</a>
+                    <a href="/questions">View Questions</a>
+                `;
+    
+                // Display sentiment analysis
+                document.getElementById('sentimentLabel').innerText = `Sentiment: ${data.sentiment}`;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

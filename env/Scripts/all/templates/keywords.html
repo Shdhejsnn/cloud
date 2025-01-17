@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keywords</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f4f4f9; 
+            color: #333; 
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        li { 
+            background-color: #f9f9f9; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        p {
+            text-align: center;
+            color: #777;
+            font-size: 18px;
+        }
+        a { 
+            display: inline-block; 
+            margin-top: 20px; 
+            text-align: center;
+            color: #fff; 
+            text-decoration: none; 
+            font-size: 18px;
+            padding: 12px 25px;
+            background-color: #007BFF;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        a:hover { 
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Keywords</h1>
+        {% if keywords %}
+            <p>Total Keywords Found: {{ keywords | length }}</p> <!-- Display total count -->
+            <ul aria-label="Keywords List"> <!-- Added aria-label for better accessibility -->
+                {% for keyword in keywords %}
+                    <li>{{ keyword }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No keywords found.</p>
+        {% endif %}
+        <a href="/" role="button">Back to Home</a> <!-- Added role="button" for better accessibility -->
+    </div>
+</body>
+</html>

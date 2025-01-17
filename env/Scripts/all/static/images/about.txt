@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Expletus Sans
+- Font Author: Copyright 2019 The Expletus Sans Project Authors (https://github.com/googlefonts/Expletus-Sans)
+- Font Source: https://fonts.gstatic.com/s/expletussans/v29/RLpqK5v5_bqufTYdnhFzDj2dX_IwS3my73zcDaSY2s1oFQTcXfMm.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

@@ -1,0 +1,241 @@
+Welcome to today's meeting. First on the agenda is the project update. John will provide a summary of the current progress and discuss the upcoming milestones. After that, we will review the budget and expenditures for the quarter. Sarah will present the financial report, and we will allocate time for questions and feedback.
+
+John reports that the development team has completed the initial phases of the project ahead of schedule. The new features are being tested and should be integrated by the end of the month. We are currently on track to meet the project deadlines.
+
+Next, Sarah will go over the budget. The current expenditure is within the allocated budget, but we need to review the projected costs for the next quarter. Any changes or adjustments to the budget will be discussed, and we will finalize the budget for approval.
+
+After the budget discussion, we will open the floor for questions. Please prepare any questions you have regarding the project or financials. We aim to address all concerns and ensure we are aligned on the next steps.
+
+Thank you for your attention. Let's begin with John's update on the project.
+
+
+Negative sentiment :
+
+Today's meeting was a disaster. We barely made any progress on our project, and the team seems completely unmotivated. 
+The discussions were unproductive, and there was a lot of arguing instead of constructive feedback. I’m concerned that
+ we’re falling further behind our deadlines. If we don’t change our approach soon, we might miss our targets completely. 
+Overall, it was a very disappointing session.
+
+QUESTIONS :
+
+"Welcome to today's meeting. First on the agenda is the project update. John will provide a summary of the current progress and discuss the upcoming milestones. After that, we will review the budget and expenditures for the quarter. Sarah will present the financial report, and we will allocate time for questions and feedback.
+
+John reports that the development team has completed the initial phases of the project ahead of schedule. The new features are being tested and should be integrated by the end of the month. We are currently on track to meet the project deadlines.
+
+Emily: John, could you clarify the timeline for the feature integration? Will it impact the testing phase?
+
+David: Are there any risks associated with the early completion of the initial phases that we should be aware of?
+
+Next, Sarah will go over the budget. The current expenditure is within the allocated budget, but we need to review the projected costs for the next quarter. Any changes or adjustments to the budget will be discussed, and we will finalize the budget for approval.
+
+Michael: Sarah, can you provide more details on the cost projections for the upcoming quarter? Are there any major expenses we should prepare for?
+
+Laura: Will the projected budget changes affect the funding for the marketing campaign next month?
+
+After the budget discussion, we will open the floor for questions. Please prepare any questions you have regarding the project or financials. We aim to address all concerns and ensure we are aligned on the next steps.
+
+Thank you for your attention. Let's begin with John's update on the project."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from flask import Flask, request, jsonify, render_template, session, send_file
+from preprocessing import preprocess_text
+from summarization import generate_summary
+from topic_modeling import extract_topics
+from action_items import extract_action_items
+from questions import extract_questions
+from textblob import TextBlob
+from io import BytesIO
+from fpdf import FPDF
+import os
+
+app = Flask(__name__)
+app.secret_key = 'teamflexbox'
+
+# Dummy in-memory storage for events
+events = []
+class MyPDF(FPDF):
+    def header(self):
+        self.set_font("Arial", 'B', 12)
+        self.cell(0, 10, "Meeting Summary", 0, 1, 'C')
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+
+@app.route('/')
+def index():
+    results = {
+        'tokens': session.get('tokens', []),
+        'summary': session.get('summary', 'No summary available.'),
+        'topics': session.get('topics', []),
+        'keywords': session.get('keywords', []),
+        'sentiment': session.get('sentiment', 'No sentiment available.'),
+        'action_items': session.get('action_items', {'tasks': [], 'decisions': [], 'follow_ups': []}),
+        'questions': session.get('questions', []),
+        'department': session.get('department', 'No department selected.')
+    }
+    return render_template('index.html', results=results)
+
+@app.route('/generate_minutes', methods=['POST'])
+def generate_minutes():
+    transcript = request.form['transcript']
+    event_date = request.form['eventDate']
+    department = request.form['department']  # Get department from form
+    print("Transcript Received:", transcript)
+    print("Department Selected:", department)
+
+    # Perform sentiment analysis
+    blob = TextBlob(transcript)
+    sentiment_polarity = blob.sentiment.polarity
+    sentiment_label = 'Positive' if sentiment_polarity > 0 else 'Negative' if sentiment_polarity < 0 else 'Neutral'
+    color = 'green' if sentiment_label == 'Positive' else 'red' if sentiment_label == 'Negative' else 'gray'
+
+    # Generate results
+    tokens = preprocess_text(transcript)
+    action_items = extract_action_items(transcript)
+    
+    # Extract questions
+    questions = extract_questions(transcript)
+    
+    # Format topics for readability
+    topics = extract_topics([transcript])
+    formatted_topics = []
+    for topic in topics:
+        topic_words = sorted(topic['top_words'], key=lambda x: x['weight'], reverse=True)
+        formatted_topic = {
+            'topic_id': topic['topic_id'],
+            'words': ', '.join([f"{word['word']} ({word['weight']:.2f})" for word in topic_words])
+        }
+        formatted_topics.append(formatted_topic)
+
+    keywords = action_items['all_keywords']  # Updated to use 'all_keywords'
+    summary = generate_summary(transcript, keywords)  # Pass keywords to generate_summary
+
+    # Store results in session
+    session['tokens'] = tokens
+    session['summary'] = summary
+    session['topics'] = formatted_topics
+    session['keywords'] = keywords
+    session['sentiment'] = sentiment_label
+    session['action_items'] = action_items
+    session['questions'] = questions  # Store questions in session
+    session['department'] = department  # Store department in session
+
+    # Save event
+    events.append({
+        'title': f'{department} Meeting Summary',  # Include department in the event title
+        'start': event_date,
+        'summary': summary,
+        'color': color  # Add color based on sentiment
+    })
+
+    return jsonify({
+        'tokens': tokens,
+        'summary': summary,
+        'topics': formatted_topics,
+        'keywords': keywords,
+        'sentiment': sentiment_label,
+        'action_items': action_items,
+        'questions': questions,  # Include questions in the response
+        'department': department  # Include department in the response
+    })
+
+@app.route('/tokenized')
+def tokenized():
+    tokens = session.get('tokens', [])
+    return render_template('tokenized.html', tokens=tokens)
+
+@app.route('/summary')
+def summary():
+    summary_text = session.get('summary', 'No summary available.')
+    return render_template('summary.html', summary=summary_text)
+
+@app.route('/detailed_summary/<department>')
+def detailed_summary(department):
+    summary_text = session.get('summary', 'No summary available.')
+    return render_template('detailed_summary.html', department=department, summary=summary_text)
+
+@app.route('/download_pdf')
+def download_pdf():
+    summary_text = session.get('summary', 'No summary available.')
+    department = session.get('department', 'General')
+
+    # Create PDF in memory
+    pdf = MyPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt=f"{department} - Detailed Summary", ln=True, align='C')
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, txt=summary_text)
+
+    # Generate PDF in BytesIO
+    pdf_output = BytesIO()
+    pdf_output.write(pdf.output(dest='S').encode('latin1'))
+    pdf_output.seek(0)
+
+    # Send PDF as response
+    return send_file(
+        pdf_output,
+        as_attachment=True,
+        download_name='detailed_summary.pdf',
+        mimetype='application/pdf'
+    )
+@app.route('/topics')
+def topics():
+    topics = session.get('topics', [])
+    return render_template('topics.html', topics=topics)
+
+@app.route('/keywords')
+def keywords():
+    keywords = session.get('keywords', [])
+    return render_template('keywords.html', keywords=keywords)
+
+@app.route('/action_items')
+def action_items():
+    action_items = session.get('action_items', {'tasks': [], 'decisions': [], 'follow_ups': []})
+    return render_template('action_items.html', action_items=action_items)
+
+@app.route('/questions')
+def questions():
+    questions = session.get('questions', [])
+    return render_template('questions.html', questions=questions)
+
+@app.route('/get_events')
+def get_events():
+    return jsonify(events)
+
+@app.route('/view_summary/<date>')
+def view_summary(date):
+    # Find the summary for the given date
+    summary = next((event['summary'] for event in events if event['start'] == date), 'No summary available for this date.')
+    return render_template('summary.html', summary=summary)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+
